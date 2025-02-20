@@ -4,15 +4,29 @@ import Image from "next/image";
 import { getMeal } from "@/lib/meals";
 import { notFound } from "next/navigation";
 
-export default async function MealDetailsPage({ params }) {
-  const { id } = params;
-  const meal = getMeal(id);
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const meal = await getMeal(id);
 
   if (!meal) {
     notFound();
   }
 
-  meal.instructions = meal.instructions.replace(/\n/g, "<br />");
+  return {
+    title: meal.title,
+    description: meal.summary,
+  };
+}
+
+export default async function MealDetailsPage({ params }) {
+  const { id } = await params;
+  const meal = await getMeal(id);
+
+  if (!meal) {
+    notFound();
+  }
+
+  meal.instructions = meal.instructions?.replace(/\n/g, "<br />");
 
   return (
     <>
